@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  studenthub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: studenthub-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:/app/data/studenthub.db
+    volumes:
+      - studenthub-data:/app/data
+      - studenthub-uploads:/app/public/uploads
+    restart: unless-stopped
+    command: sh -c "npx prisma db push --skip-generate && node server.js"
+
+volumes:
+  studenthub-data:
+    driver: local
+  studenthub-uploads:
+    driver: local
+
