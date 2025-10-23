@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export async function GET() {
 	const payments = await prisma.payment.findMany({ 
@@ -29,8 +30,9 @@ export async function POST(request: Request) {
 			return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
 		}
 		
-		const parsedAmount = parseFloat(String(amount));
-		console.log('Final parsed amount:', parsedAmount);
+		// Use Decimal to avoid floating-point precision issues
+		const parsedAmount = new Decimal(String(amount));
+		console.log('Final parsed amount:', parsedAmount.toString());
 		
 		// Try to create payment with bookingId, fallback to without if schema not updated
 		let created;
@@ -56,7 +58,7 @@ export async function POST(request: Request) {
 			});
 		}
 		
-		console.log('Created payment amount:', created.amount);
+		console.log('Created payment amount:', created.amount.toString());
 		console.log('=====================');
 		
 		// Convert Decimal to number before returning

@@ -75,7 +75,6 @@ export default function Navigation() {
                 <Link href="/students" className="dropdown-item" onClick={() => setActiveDropdown(null)}>View Students</Link>
                 <Link href="/students/new" className="dropdown-item" onClick={() => setActiveDropdown(null)}>Add Student</Link>
                 <Link href="/students/search" className="dropdown-item" onClick={() => setActiveDropdown(null)}>Search Students</Link>
-                <Link href="/students" className="dropdown-item" onClick={() => setActiveDropdown(null)}>Remove Student</Link>
               </div>
             )}
           </div>

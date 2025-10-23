@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { Decimal } from "@prisma/client/runtime/library";
 
 type Context = {
 	params: Promise<{ id: string }>;
@@ -26,7 +27,7 @@ export async function PUT(request: NextRequest, { params }: Context) {
 		where: { id },
 		data: { 
 			studentId: studentId ? Number(studentId) : undefined,
-			amount: amount ? parseFloat(amount) : undefined,
+			amount: amount ? new Decimal(String(amount)) : undefined,
 			notes: notes ?? null
 		},
 		include: { student: true }

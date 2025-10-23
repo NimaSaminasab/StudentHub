@@ -50,6 +50,7 @@ export default function PaymentsPage() {
 		notes: ""
 	});
 	const [submitting, setSubmitting] = useState(false);
+	const [deleting, setDeleting] = useState<number | null>(null);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -119,6 +120,33 @@ export default function PaymentsPage() {
 			setSubmitting(false);
 		}
 	};
+
+	const handleDeletePayment = async (paymentId: number) => {
+		if (!confirm('Are you sure you want to delete this payment? This action cannot be undone.')) {
+			return;
+		}
+
+		setDeleting(paymentId);
+		try {
+			const res = await fetch(`/api/payments/${paymentId}`, {
+				method: "DELETE"
+			});
+			
+			if (res.ok) {
+				setPayments(prev => prev.filter(payment => payment.id !== paymentId));
+				// Refresh to update all balances
+				window.location.reload();
+			} else {
+				alert('Failed to delete payment');
+			}
+		} catch (error) {
+			console.error("Failed to delete payment:", error);
+			alert('Error deleting payment');
+		} finally {
+			setDeleting(null);
+		}
+	};
+
 
 	const getTotalLessons = (studentId: number) => {
 		// Find all bookings where this student attended
@@ -259,6 +287,7 @@ export default function PaymentsPage() {
 							<th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid rgba(255,255,255,0.2)" }}>Student</th>
 							<th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid rgba(255,255,255,0.2)" }}>Amount</th>
 							<th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid rgba(255,255,255,0.2)" }}>Notes</th>
+							<th style={{ textAlign: "center", padding: 8, borderBottom: "1px solid rgba(255,255,255,0.2)" }}>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -275,6 +304,25 @@ export default function PaymentsPage() {
 								</td>
 								<td style={{ padding: 8, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
 									{payment.notes ?? "N/A"}
+								</td>
+								<td style={{ padding: 8, borderBottom: "1px solid rgba(255,255,255,0.1)", textAlign: "center" }}>
+									<button 
+										onClick={() => handleDeletePayment(payment.id)}
+										disabled={deleting === payment.id}
+										style={{
+											backgroundColor: "#dc3545",
+											borderColor: "#dc3545",
+											color: "white",
+											padding: "4px 8px",
+											borderRadius: "4px",
+											border: "none",
+											cursor: deleting === payment.id ? "not-allowed" : "pointer",
+											opacity: deleting === payment.id ? 0.6 : 1,
+											fontSize: "12px"
+										}}
+									>
+										{deleting === payment.id ? "..." : "Delete"}
+									</button>
 								</td>
 							</tr>
 						))}

@@ -22,8 +22,8 @@ model Student {
   age             Int?
   phone           String?
   image           String?
-  privateRate     Float              @default(0.00)
-  groupRate       Float              @default(0.00)
+  privateRate     Decimal            @default(0.00)
+  groupRate       Decimal            @default(0.00)
   bookings        BookingStudent[]
   payments        Payment[]
   createdAt       DateTime           @default(now())
@@ -61,7 +61,7 @@ model Payment {
   student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   bookingId Int?     @unique
   booking   Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  amount    Float
+  amount    Decimal
   date      DateTime @default(now())
   notes     String?
   createdAt DateTime @default(now())
